@@ -10,3 +10,4 @@ summa-solvency = { path = "../zk_prover" }
 summa-backend = { path = "../backend" }
 tokio = { version = "1.7.1", features = ["full"] }
 ethers = "2.0"
+serde_json = "1.0.64"

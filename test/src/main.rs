@@ -1,3 +1,10 @@
+#![feature(generic_const_exprs)]
+
+use std::{
+    fs::File,
+    io::Write,
+};
+use serde_json::to_string_pretty;
 use summa_backend::{
     apis::{
         address_ownership::AddressOwnership,
@@ -8,7 +15,7 @@ use summa_backend::{
 };
 use summa_solvency::merkle_sum_tree::MerkleSumTree;
 
-async fn do_it() -> Result<(), Box<dyn std::error::Error>> {
+async fn run_test() -> Result<(), Box<dyn std::error::Error>> {
     let (_, _, _, _, summa_contract) = initialize_test_env(None).await;
 
     // Address ownership proof
@@ -54,11 +61,23 @@ async fn do_it() -> Result<(), Box<dyn std::error::Error>> {
 
     round.dispatch_commitment().await?;
 
+    // Inclusion proof
+    let bob_index = 1;
+    let inclusion_proof = round.get_proof_of_inclusion(bob_index).unwrap();
+
+    let file_name = "bob_proof.json";
+    let mut file = File::create(file_name).unwrap();
+    let output = to_string_pretty(&inclusion_proof).unwrap();
+    file.write_all(output.as_bytes())
+        .expect("Failed to write JSON to file");
+
+    println!("Saved proof to `{}`", file_name);
+
     Ok(())
 }
 
 #[tokio::main]
 async fn main() {
-    do_it().await.unwrap();
+    run_test().await.unwrap();
 }
 

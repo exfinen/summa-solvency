@@ -8,8 +8,8 @@ use summa_solvency::{
     merkle_sum_tree::{MerkleSumTree, Tree},
 };
 
-const N_CURRENCIES: usize = 2;
-const N_BYTES: usize = 8;
+const N_CURRENCIES: usize = 1;
+const N_BYTES: usize = 2;
 
 fn main() {
     let merkle_sum_tree =

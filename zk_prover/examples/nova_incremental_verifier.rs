@@ -15,7 +15,7 @@ use num_bigint::BigUint;
 use serde_json::json;
 use summa_solvency::merkle_sum_tree::utils::big_intify_username;
 
-const N_CURRENCIES: usize = 2;
+const N_CURRENCIES: usize = 1;
 
 /// In this scenario the Exchange is generating an incremental inclusion proof for a user after 3 rounds.
 /// It means that starting from this proof, the user can verify their correct inclusion in the Liabilities Tree for each round up to round 3 in a single proof.

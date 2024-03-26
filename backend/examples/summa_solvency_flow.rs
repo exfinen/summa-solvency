@@ -11,7 +11,7 @@ use summa_backend::{
         round::{MstInclusionProof, Round},
     },
     contracts::signer::{AddressInput, SummaSigner},
-    tests::initialize_test_env,
+
 };
 use summa_solvency::merkle_sum_tree::MerkleSumTree;
 

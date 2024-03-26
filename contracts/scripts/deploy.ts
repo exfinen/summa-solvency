@@ -16,11 +16,11 @@ async function main() {
   await inclusionVerifier.deployed();
 
   // The number of levels of the Merkle sum tree
-  const mstLevels = 4;
+  const mstLevels = 2;
   //The number of cryptocurrencies supported by the Merkle sum tree
-  const currenciesCount = 2;
+  const currenciesCount = 1;
   // The number of bytes used to represent the balance of a cryptocurrency in the Merkle sum tree
-  const balanceByteRange = 8;
+  const balanceByteRange = 2;
   const summa = await ethers.deployContract("Summa", [
     inclusionVerifier.address,
     mstLevels,

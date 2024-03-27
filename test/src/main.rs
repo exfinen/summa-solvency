@@ -64,6 +64,7 @@ async fn run_test() -> Result<(), Box<dyn std::error::Error>> {
     // Inclusion proof
     let bob_index = 1;
     let inclusion_proof = round.get_proof_of_inclusion(bob_index).unwrap();
+    println!("Got proof: {:?}", &inclusion_proof);
 
     let file_name = "bob_proof.json";
     let mut file = File::create(file_name).unwrap();

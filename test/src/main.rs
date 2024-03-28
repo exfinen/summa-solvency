@@ -5,7 +5,14 @@ use std::{
     io::Write,
     io::BufReader,
 };
-use ethers::types::U256;
+use ethers::{
+    prelude::abigen,
+    providers::Provider,
+    types::{
+        U256, 
+        Address,
+    },
+};
 use serde_json::{
     from_reader,
     to_string_pretty,
@@ -17,9 +24,19 @@ use summa_backend::{
         round::{MstInclusionProof, Round},
     },
     contracts::signer::{AddressInput, SummaSigner},
-    tests::initialize_test_env,
 };
+use std::sync::Arc;
 use summa_solvency::merkle_sum_tree::MerkleSumTree;
+
+abigen!(
+    ISummaContract,
+    "../backend/src/contracts/abi/Summa.json",
+);
+
+abigen!(
+    IInclusionVerifier,
+    "../backend/src/contracts/abi/InclusionVerifier.json",
+);
 
 async fn run_test() -> Result<(), Box<dyn std::error::Error>> {
     // What to prove
@@ -33,14 +50,18 @@ async fn run_test() -> Result<(), Box<dyn std::error::Error>> {
     const LEVELS: usize = 2;
     const N_BYTES: usize = 2;
 
-    let (_, _, _, _, summa_contract) = initialize_test_env(None).await;
+    let summa_addr: Address =
+        "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512".parse()?;
 
     let signer = {
-        // Account #18
+        // Account #0 private key
+        let priv_key_0 = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+        let rpc_endpoint = "http://localhost:8545";
+
         SummaSigner::new(
-            "0xde9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b4ee0",
-            "http://localhost:8545/",
-            AddressInput::Address(summa_contract.address()),
+            priv_key_0,
+            rpc_endpoint,
+            AddressInput::Address(summa_addr),
         )
         .await?
      };
@@ -116,6 +137,17 @@ async fn run_test() -> Result<(), Box<dyn std::error::Error>> {
         println!("Leaf hash is valid");
     }
 
+    let summa_contract = {
+        let provider = {
+            let rpc_url = "http://localhost:8545";
+            Arc::new(Provider::try_from(rpc_url)?)
+        };
+        ISummaContract::new(
+            summa_addr,
+            provider,
+        )
+    };
+
     // Get the MST root at SNAPSHOT_TIME from the contract
     let snapshot_time = U256::from(SNAPSHOT_TIME);
     let mst_root_commitment = summa_contract
@@ -135,7 +167,7 @@ async fn run_test() -> Result<(), Box<dyn std::error::Error>> {
             incl_proof.get_proof().clone(),
             public_inputs.clone(),
             snapshot_time
-        ).await?;
+        ).await?
     };
     println!("Is proof valid? {:?}", is_incl_proof_valid);
 

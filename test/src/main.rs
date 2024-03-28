@@ -39,7 +39,7 @@ async fn run_test() -> Result<(), Box<dyn std::error::Error>> {
         // Account #18
         SummaSigner::new(
             "0xde9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b4ee0",
-            "http://127.0.0.1:8545/",
+            "http://localhost:8545/",
             AddressInput::Address(summa_contract.address()),
         )
         .await?
